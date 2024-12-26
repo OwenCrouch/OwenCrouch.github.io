@@ -1,7 +1,308 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Merry Christmas Paul!</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: black;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Loading Screen Overlay */
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
+      z-index: 10;
+    }
+
+    #loading-text {
+      color: white;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    #loading-bar {
+      width: 80%;
+      max-width: 600px;
+      height: 10px;
+      background-color: white;
+      overflow: hidden;
+      border-radius: 5px;
+    }
+
+    #loading-bar-progress {
+      height: 100%;
+      background-color: #00ff00;
+      width: 0%;
+      transition: width 5s linear;
+    }
+
+    /* Bouncing Logo */
+    #container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #logo {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background-color: white;
+      background-image: url('https://media.licdn.com/dms/image/v2/C4E03AQGnKW2mUZCk-g/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1516361403573?e=1740614400&v=beta&t=OGGlwkFRfVIJV4GsUqp5_WeIl6Vqk4iJRosWr7ZsLtg');
+      background-size: cover;
+    }
+
+    /* Random Element Display */
+    #random-element {
+      position: fixed;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 32px;
+      text-align: center;
+      display: none; /* Hidden initially */
+      z-index: 20;
+    }
+
+    /* Fake Counter */
+    #counter {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 20px;
+      text-align: center;
+      display: none; /* Hidden initially */
+      z-index: 20;
+    }
+  </style>
+</head>
 <body>
-<h1> Hello World!</h1>
-<p>im hosted with github pages</p>
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div id="loading-text">Loading, Please Wait</div>
+    <div id="loading-bar">
+      <div id="loading-bar-progress"></div>
+    </div>
+  </div>
+
+  <!-- Container for Bouncing Logo -->
+  <div id="container">
+    <div id="logo"></div>
+  </div>
+
+  <!-- Random Element Display -->
+  <div id="random-element"></div>
+
+  <!-- Fake Counter -->
+  <div id="counter"></div>
+
+  <script>
+    const logo = document.getElementById("logo");
+    const container = document.getElementById("container");
+    const loadingScreen = document.getElementById("loading-screen");
+    const loadingBarProgress = document.getElementById("loading-bar-progress");
+    const randomElement = document.getElementById("random-element");
+    const counter = document.getElementById("counter");
+
+    let posX = Math.random() * (window.innerWidth - 100);
+    let posY = Math.random() * (window.innerHeight - 50);
+    let velocityX = 2;
+    let velocityY = 2;
+
+    // Start counter at a random number
+    let ideaCounter = Math.floor(419000 + Math.random() * 100);
+
+    // List of ideas
+    const ideas = [
+    "Drizzle it over roasted vegetables for that golden, crispy finish.",
+    "Make a quick vinaigrette by whisking it with some vinegar and mustard.",
+    "Use it to season a cast iron skillet for a perfectly slick cooking surface.",
+    "Fry up a batch of crispy onions or garlic to use as a topping for soups or salads.",
+    "Drizzle it over popcorn with a sprinkle of salt for an elevated movie snack.",
+    "Pour it into a squeeze bottle and use it for precision drizzling when plating your dishes.",
+    "Brush it onto tortillas before toasting them to make perfectly crispy wraps or chips.",
+    "Use it to coat your hands before working with sticky doughs or batters for mess-free shaping.",
+    "Use it to tie up a bunch of herbs for a giant, playful bouquet garni in your stockpot.",
+    "Twist it into a spiral to create a novelty mold for shaping dough or pastries.",
+    "Repurpose it as a hanging rack for drying pasta you’ve just made.",
+    "Tie it into knots and use it to shape bagels or pretzels for baking.",
+    "Fashion it into a loop to hold a pot lid in place while you strain pasta or drain a broth.",
+    "Use it to tie up a stuffed roast or chicken for perfect even cooking.",
+    "Twist it into a coil and use it to hold a large pot lid in place when it’s not quite the right size.",
+    "Coat the skipping rope in oil, hang it above your stove, and call it a unique “infusion drip” for your cooking experiments.",
+    "Rub oil on the skipping rope, then use it to press decorative patterns into cookie dough.",
+    "Coat the skipping rope lightly in oil and use it to roll out pie crust or pasta dough when you’re out of a rolling pin.",
+    "Oil the skipping rope and use it to pull delicate homemade candy into intricate shapes.",
+    "Soak the skipping rope in oil and use it as a makeshift wick for an emergency kitchen candle.",
+    "Create an oiled skipping rope 'skewer' to roast marshmallows or kabobs in a truly unconventional way.",
+    "Coat the skipping rope with oil and lay it over dough to create intricate, edible patterns after baking.",
+    "Swallow the skipping rope, then surprise the surgeons with the world’s most colourful tape worm.",
+    "Wax the floors with the oil then strap the skipping rope to the dog and get her to pull you around like a sled dog.",
+    "Recreate the lady and the tramp scene but with 6ft of skipping rope.",
+    "Strap a go pro to the end of the skipping rope and you have a DIY colonoscope.",
+    "Wash it off and you also have an Endoscope.",
+    "Whip the skipping rope around to establish dominance in any disagreement.",
+    "Use the oil to make a salad dressing.",
+    "Kidnap the pope and make him give you his signature salad blessing.",
+    "Choose an oil at random for a salad guessing.",
+    "Put on a blindfold and miss the salad bowl for a salad messing.",
+    "Fry the skipping rope.",
+    "Sauté the skipping rope.",
+    "Pan sear the skipping rope.",
+    "Deep fry the skipping rope.",
+    "Shallow fry the skipping rope.",
+    "Eat the skipping rope.",
+    "Tie the skipping rope to your waist and another to a banister for the world’s shortest bungee cord.",
+    "Dye the back garden red with the chilli oil.",
+    "Bury the oil somewhere and ruin the day of a future oil prospector.",
+    "Bribe an Italian with the oil.",
+    "The ultimate work dinner powerplay, when the waiter asks if you’d like any oil just say ‘no thanks I brought my own’ and proceed to chug all 5 bottles of oil in front of your boss. Then ask him for a promotion.",
+    "Create the world’s most expensive slip n slide.",
+    "Use the skipping rope as the manufacturer intended.",
+    "Increase your odds of dying to skipping rope related fatalities by skipping on the oil floor.",
+    "Lather the fence in the world’s worst anti climb paint.",
+    "Leave some oil out for Gandolfini Claus so he doesn’t whack ya’ when he comes down the chimney.",
+    "Lubricate your bike wheels.",
+    "Lubricate the handlebars.",
+    "Lubricate the brakes.",
+    "Pour the oil down your vents and elevator shaft as an anti-“Bruce Willis” repellent.",
+    "Lather every wooden surface in your house.",
+    "Start the anti keto diet and drink nothing but oil for 30 days.",
+    "Pour oil on yourself and pretend you’re Lee Evans delivering a comedy set.",
+    "Stick the skipping rope into a bottle of oil and light the tip for the world’s shittiest Molotov.",
+    "Mix the oils and sell them in capsules for ‘health benefits’.",
+    "Stick one end of the skipping rope to a nerf gun and use it as a grappling cannon.",
+    "Use the oil to help you escape through a tube when the need arises.",
+    "You can use the chilli oil for the world’s stingiest massage.",
+    "Dye the dog red with the chilli oil.",
+    "Dye the dog black with the balsamic vinegar.",
+    "Attach the skipping rope to a tree branch, douse it in oil, and create a very slippery swing of doom.",
+    "Create a skipping rope 'fuse' by soaking it in oil, then use it to ignite the BBQ in the most needlessly elaborate way possible.",
+    "Coat the skipping rope in oil and challenge your friends to the world's most frustrating tug-of-war.",
+    "Wrap the skipping rope in a layer of soaked paper towels drenched in oil and make an incredibly inefficient torch.",
+    "Hang the skipping rope like a vine, coat it in oil, and swing into the nearest puddle for a low-budget Tarzan experience.",
+    "Tie the skipping rope to the banister for the ultimate grip strength test.",
+    "Soak the skipping rope in oil, freeze it, and marvel at your new useless ice sculpture.",
+    "Tie the skipping rope between two poles for the crappiest game of limbo you’ll ever play.",
+    "Use the skipping rope as a wick for a 6ft candle.",
+    "Tie the skipping rope into a lasso and try to catch Bella in the garden with it.",
+    "Pour oil on the floor during the lobby shootout, causing the agents to slip and fall hilariously, ending the fight in seconds in the hit 90s action film The Matrix.",
+    "Tie the skipping rope to a railing and swing it like a lasso to yank the detonator out of Hans Gruber’s hand in the hit 90s action film Die Hard with a Vengeance.",
+    "Soak the skipping rope in oil, use it as a flaming whip, and scare off Simon Phoenix in the hit 90s action film Demolition Man.",
+    "Dump oil on the helipad so the villain's escape chopper slides right off into the ocean in the hit 90s action film True Lies.",
+    "Tie the skipping rope into a loop and use it to yank Ethan Hunt out of danger before he has to dangle dramatically in the hit 90s action film Mission: Impossible.",
+    "Pour oil on the dinosaur tracks to make the T-Rex slip and fall during its big reveal in the hit 90s action film Jurassic Park.",
+    "Use the skipping rope to snag the briefcase before Samuel L. Jackson and John Travolta even notice it in the hit 90s action film Pulp Fiction.",
+    "Tie the skipping rope to a tree and create a quick zip line to escape from the exploding jungle in the hit 90s action film Predator 2.",
+    "Douse the skipping rope in oil and use it as a decoy fuse to distract the villain while you sneak away in the hit 90s action film The Rock.",
+    "Use the skipping rope to tie up Sebastian’s piano so he can't play yet another melancholy jazz tune, forcing him to finally have a normal conversation with Mia for the hit film La La Land.",
+    "Tie up the skipping rope into a tiny hammock for guinea pigs.",
+    "Attach the skipping rope to a stick then go fishing in your local aquarium.",
+    "Tie it round a pole and use it as a replacement for swing ball.",
+    "You can supplement the skipping rope into any recipe that requires spaghetti.",
+    "Hang it between two poles and turn it into a makeshift laundry line.",
+    "Use it to secure the lid on an overstuffed suitcase that’s threatening to explode at any moment.",
+    "Attach it to a ceiling hook and use it to hang a planter but make it a cactus for the ultimate risk.",
+    "Replace the laces on your hiking boots with the skipping rope for extreme durability (and tripping hazards).",
+    "Fill one of the skipping rope handles with oil then tie it to a tree for the shittiest pinata ever created.",
+    "Wrap the skipping rope around something to increase the grip of the object.",
+    "Use the skipping rope as a pulley mechanism to send memos round the office.",
+    "Turn your office chair into a slippery chariot by tying the skipping rope to a coworker’s chair and oiling the wheels.",
+    "Make every door at Microsoft slippery with the oil.",
+    "Use the skipping rope to tie your various office equipment together to stop them disappearing ‘mysteriously’.",
+    "Use the skipping rope as a giant bowstring for the world's largest bow and arrow set.",
+    "Tie the skipping rope round your waist and then to your ceiling fan and use it as a lumbar support system.",
+    "Use it as an impromptu barrier to claim the prime meeting room when everyone’s fighting for it.",
+    "Use the oil to shine up your desk nameplate to ensure everyone knows whose territory they’re entering.",
+    "Add oil to the coffee of someone you dislike, ruining their day.",
+    "Add a small amount of oil to Bella’s fur to give her that show dog finish.",
+    "Use the skipping rope as a fun leash and see if she gets tangled in record time.",
+    "Wax the floor with the oil and watch Bella do her best Scooby-Doo impression as she struggles to find grip on the floor.",
+    "Create a makeshift harness out of the skipping rope and then carry the dog on your back like a backpack.",
+    "Create a makeshift dog gate by tying the skipping rope across a doorway to keep Bella out of forbidden rooms."
+];
+
+
+    // Simulate loading bar progress
+    setTimeout(() => {
+      loadingBarProgress.style.width = "100%";
+    }, 100);
+
+    // Hide loading screen and start functionalities after 5 seconds
+    setTimeout(() => {
+      loadingScreen.style.display = "none";
+      randomElement.style.display = "block";
+      counter.style.display = "block";
+      cycleThroughIdeas();
+      incrementCounter();
+    }, 5000);
+
+    // Cycle through ideas every 0.1 seconds
+    function cycleThroughIdeas() {
+      let index = 0;
+      setInterval(() => {
+        randomElement.textContent = `Idea ${ideaCounter}: ${ideas[index]}`;
+        ideaCounter++; // Increment counter for each new idea
+        index = (index + 1) % ideas.length; // Loop back to the start of the list
+      }, 100); // 0.1 seconds
+    }
+
+    // Increment fake counter every 0.1 seconds
+    function incrementCounter() {
+      setInterval(() => {
+        counter.textContent = `Ideas Generated with AI: ${ideaCounter}`;
+        ideaCounter++;
+      }, 100); // 0.1 seconds
+    }
+
+    // Bouncing Logo Animation
+    function updatePosition() {
+      posX += velocityX;
+      posY += velocityY;
+
+      // Bounce off the walls
+      if (posX <= 0 || posX >= window.innerWidth - 100) {
+        velocityX = -velocityX;
+        changeColor();
+      }
+      if (posY <= 0 || posY >= window.innerHeight - 50) {
+        velocityY = -velocityY;
+        changeColor();
+      }
+
+      logo.style.left = `${posX}px`;
+      logo.style.top = `${posY}px`;
+      requestAnimationFrame(updatePosition);
+    }
+
+    // Start bouncing logo animation immediately
+    updatePosition();
+
+    // Change logo color on bounce
+    function changeColor() {
+      logo.style.backgroundColor = `rgb(${randomColorValue()}, ${randomColorValue()}, ${randomColorValue()})`;
+    }
+
+    // Generate random color values
+    function randomColorValue() {
+      return Math.floor(Math.random() * 256);
+    }
+  </script>
 </body>
 </html>
