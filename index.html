@@ -277,11 +277,11 @@
       posY += velocityY;
 
       // Bounce off the walls
-      if (posX <= 0 || posX >= window.innerWidth - 100) {
+      if (posX <= 0 || posX >= window.innerWidth - 200) {
         velocityX = -velocityX;
         changeColor();
       }
-      if (posY <= 0 || posY >= window.innerHeight - 50) {
+      if (posY <= 0 || posY >= window.innerHeight - 200) {
         velocityY = -velocityY;
         changeColor();
       }
